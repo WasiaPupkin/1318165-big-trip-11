@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Сысоев Дмитрий](https://up.htmlacademy.ru/ecmascript/11/user/1318165).
-* Наставник: `Неизвестно`.
+* Наставник: [Талифа Аушева](https://htmlacademy.ru/profile/id1434685).
 
 ---
 
