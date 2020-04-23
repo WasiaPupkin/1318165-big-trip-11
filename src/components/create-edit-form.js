@@ -80,7 +80,15 @@ const createFavoriteMarkup = (index, isFavorite) => {
 };
 
 export const createFormCreateEditTemplate = (pathPoint, formIndex) => {
-  const {pathPointType, destinationCity, offers, pathPointStartDateTime, pathPointEndDateTime, price, destinationDescription, isFavorite} = pathPoint ? pathPoint : ``;
+  const {
+    pathPointType,
+    destinationCity,
+    offers,
+    pathPointStartDateTime,
+    pathPointEndDateTime,
+    price,
+    destinationDescription,
+    isFavorite} = pathPoint ? pathPoint : ``;
 
   const typeItemMarkupInWay = createTypeItemMarkup(PathPointTypes.IN_WAY, formIndex);
   const typeItemMarkupOnWay = createTypeItemMarkup(PathPointTypes.ON_WAY, formIndex);

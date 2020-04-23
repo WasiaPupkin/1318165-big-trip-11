@@ -5,13 +5,13 @@ export const createTripInfoTemplate = (pathPoints) =>{
     return accumulator + currentValue.price;
   }, 0);
 
-  const tripStartDate = pathPoints[0].pathPointStartDateTime.toLocaleString(`default`, {month: `short`}) + ` ` + pathPoints[0].pathPointStartDateTime.getDate();
+  const tripStartDate = pathPoints[0].pathPointStartDateTime.toLocaleString(`en-US`, {month: `short`}) + ` ` + pathPoints[0].pathPointStartDateTime.getDate();
   const tripEndDate = pathPoints[pathPoints.length - 1].pathPointStartDateTime.getDate();
 
   return (
     `<section class="trip-main__trip-info  trip-info">
             <div class="trip-info__main">
-              <h1 class="trip-info__title">${tripPathArr.join(` &mdash; `)}</h1>
+              <h1 class="trip-info__title">${tripPathArr.length <= 3 ? tripPathArr.join(` &mdash; `) : (tripPathArr[0] + ` &mdash; ... &mdash; ` + tripPathArr[tripPathArr.length - 1])}</h1>
               <p class="trip-info__dates">${tripStartDate} &nbsp;&mdash;&nbsp; ${tripEndDate}</p>
             </div>
 
