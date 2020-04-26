@@ -1,17 +1,16 @@
-import {editFormFormatTime} from '../utils';
+import {createElement, editFormFormatTime} from '../utils';
 import {AVAILABLE_OFFERS, CITIES, PathPointTypes} from '../const';
-import {createRollupBtnMarkup} from './rollupBtn';
-
+import RollupBtnComponent from './rollupBtn';
 
 const createTypeItemMarkup = (typesArr, index) => {
   const isChecked = Math.random() > 0.5;
   return typesArr.map((type) =>{
-    return (`
-         <div class="event__type-item">
+    return (
+      `<div class="event__type-item">
           <input id="event-type-taxi-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}" ${isChecked ? `checked` : ``}>
           <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-taxi-${index}">${type}</label>
-        </div>
-    `);
+        </div>`
+    );
   }).join(`\n`);
 };
 
@@ -79,7 +78,7 @@ const createFavoriteMarkup = (index, isFavorite) => {
 
 };
 
-export const createFormCreateEditTemplate = (pathPoint, formIndex) => {
+const createFormCreateEditTemplate = (pathPoint, formIndex) => {
   const {
     pathPointType,
     destinationCity,
@@ -95,7 +94,7 @@ export const createFormCreateEditTemplate = (pathPoint, formIndex) => {
   const availableOffersMarkup = createOffersMarkup(offers);
   const citiesDataListMarkup = createCitiesDataListMarkup(formIndex);
   const favoriteMarkup = createFavoriteMarkup(formIndex, isFavorite);
-  const rollUpBtnMarkup = createRollupBtnMarkup();
+  const rollUpBtnMarkup = new RollupBtnComponent().getTemplate();
 
   const preposition = PathPointTypes.ON_WAY.find((el) => {
     return el === pathPointType;
@@ -184,3 +183,27 @@ export const createFormCreateEditTemplate = (pathPoint, formIndex) => {
           </form>`
   );
 };
+
+export default class EditForm {
+  constructor(pathPoint, formIndex) {
+    this._element = null;
+    this._pathPoint = pathPoint;
+    this._formIndex = formIndex;
+  }
+
+  getTemplate() {
+    return createFormCreateEditTemplate(this._pathPoint, this._formIndex);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

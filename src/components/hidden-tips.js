@@ -1,20 +1,19 @@
 import {createElement} from "../utils";
 
-const createRollupBtnMarkup = () => {
+const createHiddenTipsTemplate = (text) => {
   return (
-    `<button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-     </button>`
+    `<h2 class="visually-hidden">${text}</h2>`
   );
 };
 
-export default class RollupBtn {
-  constructor() {
+export default class HiddenTips {
+  constructor(text) {
     this._element = null;
+    this._text = text;
   }
 
   getTemplate() {
-    return createRollupBtnMarkup();
+    return createHiddenTipsTemplate(this._text);
   }
 
   getElement() {

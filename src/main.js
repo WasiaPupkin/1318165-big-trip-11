@@ -1,42 +1,76 @@
-import {createTripInfoTemplate} from "./components/trip-info.js";
-import {createMenuTemplate} from "./components/menu.js";
-import {createFiltersTemplate} from "./components/filters.js";
-import {createSortingTemplate} from "./components/sorting.js";
-import {createFormCreateEditTemplate} from "./components/create-edit-form.js";
-import {craetePathPointContainerElement, createPathPointContainerTemplate} from "./components/path-point-container.js";
-import {createPathPointTemplate} from "./components/path-point.js";
-import {generatePathPoints} from "./mock/path-point.js";
+import TripInfoComponent from './components/trip-info';
+import MenuComponent from './components/menu';
+import FiltersComponent from './components/filters';
+import SortComponent from './components/sort';
+import EditFormComponent from './components/create-edit-form';
+import PathPointContainerComponent from './components/path-point-container';
+import PathPointElementComponent from './components/path-point-element';
+import PathPointComponent from './components/path-point';
+import HiddenTipsComponent from './components/hidden-tips';
+import {generatePathPoints} from './mock/path-point';
+import {render, RenderPosition} from './utils';
 
 const PATH_POINTS_COUNT = 20;
 let formIndex = 0;
 let currentDate;
 let dayCounter = 0;
 let pathPoinsContainer;
-let oneTimeEditFormCreation = true;
-
-const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const pageHeader = document.querySelector(`.page-header`);
 const tripInfoContainer = pageHeader.querySelector(`.trip-main`);
 
 const pathPoints = generatePathPoints(PATH_POINTS_COUNT);
 
-render(tripInfoContainer, createTripInfoTemplate(pathPoints), `afterbegin`);
+render(tripInfoContainer, new TripInfoComponent(pathPoints).getElement(), RenderPosition.AFTERBEGIN);
 
 const tripControlsContainer = tripInfoContainer.querySelector(`.trip-controls`);
-const menuContainerAfter = tripControlsContainer.querySelector(`h2`);
 
-render(menuContainerAfter, createMenuTemplate(), `afterend`);
-render(tripControlsContainer, createFiltersTemplate());
+render(tripControlsContainer, new HiddenTipsComponent(`Switch trip view`).getElement());
+render(tripControlsContainer, new MenuComponent().getElement());
+render(tripControlsContainer, new HiddenTipsComponent(`Filter events`).getElement());
+render(tripControlsContainer, new FiltersComponent().getElement());
 
 const bodyMainContainer = document.querySelector(`.page-main`);
 const tripEventsContainer = bodyMainContainer.querySelector(`.trip-events`);
-const eventSortingContainerAfter = tripEventsContainer.querySelector(`h2`);
 
-render(eventSortingContainerAfter, createSortingTemplate(), `afterend`);
-render(tripEventsContainer, createFormCreateEditTemplate(null, formIndex));
+render(tripEventsContainer, new HiddenTipsComponent(`Trip events`).getElement());
+render(tripEventsContainer, new SortComponent().getElement());
+
+const renderPathPoint = (pathPointsContainer, pathPoint) => {
+  const replacePathPointToEdit = () => {
+    pathPointsContainer.replaceChild(editFormComponent.getElement(), pathPointComponent.getElement());
+  };
+
+  const replaceEditToPathPoint = () => {
+    pathPointsContainer.replaceChild(pathPointComponent.getElement(), editFormComponent.getElement());
+  };
+
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      replaceEditToPathPoint();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  const pathPointComponent = new PathPointComponent(pathPoint);
+  const editButton = pathPointComponent.getElement().querySelector(`.event__rollup-btn`);
+  editButton.addEventListener(`click`, () => {
+    replacePathPointToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
+
+  const editFormComponent = new EditFormComponent(pathPoint, ++formIndex);
+  const editForm = editFormComponent.getElement();
+  editForm.addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceEditToPathPoint();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
+
+  render(pathPointsContainer, pathPointComponent.getElement());
+};
 
 pathPoints.forEach((pathPoint) => {
 
@@ -44,21 +78,14 @@ pathPoints.forEach((pathPoint) => {
 
   if (!currentDate || (currentDate && currentDate.getTime() !== pathPointstartDate.getTime())) {
     currentDate = pathPointstartDate;
-    const currentPathPointContainerTemplate = createPathPointContainerTemplate();
-    render(tripEventsContainer, currentPathPointContainerTemplate);
+    render(tripEventsContainer, new PathPointContainerComponent().getElement());
     let tripDaysContainers = tripEventsContainer.querySelectorAll(`.trip-days`);
     let tripDaysContainer = tripDaysContainers[tripDaysContainers.length - 1];
-    render(tripDaysContainer, craetePathPointContainerElement(pathPoint, ++dayCounter));
+    render(tripDaysContainer, new PathPointElementComponent(pathPoint, ++dayCounter).getElement());
     pathPoinsContainer = tripDaysContainer.querySelector(`.trip-events__list`);
-    if (oneTimeEditFormCreation) {
-      render(pathPoinsContainer, createFormCreateEditTemplate(pathPoint, ++formIndex));
-      oneTimeEditFormCreation = false;
-    } else {
-      render(pathPoinsContainer, createPathPointTemplate(pathPoint));
-    }
-
+    renderPathPoint(pathPoinsContainer, pathPoint);
   } else if (pathPoinsContainer) {
-    render(pathPoinsContainer, createPathPointTemplate(pathPoint));
+    renderPathPoint(pathPoinsContainer, pathPoint);
   }
 });
 

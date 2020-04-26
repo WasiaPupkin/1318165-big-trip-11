@@ -1,27 +1,31 @@
-import {isoDateFormat} from '../utils';
-
-const craetePathPointContainerElement = (pathPoint, dayCounter) => {
-  const {pathPointStartDateTime} = pathPoint;
-  return (`
-              <li class="trip-days__item  day">
-              <div class="day__info">
-                <span class="day__counter">${dayCounter}</span>
-                <time class="day__date" datetime=${isoDateFormat(pathPointStartDateTime)}>${pathPointStartDateTime.toLocaleString(`en-US`, {month: `short`})} ${pathPointStartDateTime.getDate()}</time>
-              </div>
-
-              <ul class="trip-events__list">
-              </ul>
-            </li>
-  `);
-};
+import {createElement} from "../utils";
 
 const createPathPointContainerTemplate = () => {
-
   return (
-    `<ul class="trip-days">
-
-     </ul>`
+    `<ul class="trip-days"></ul>`
   );
 };
 
-export {createPathPointContainerTemplate, craetePathPointContainerElement};
+export default class PathPointContainer {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPathPointContainerTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+

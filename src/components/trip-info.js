@@ -1,4 +1,6 @@
-export const createTripInfoTemplate = (pathPoints) =>{
+import {createElement} from "../utils";
+
+const createTripInfoTemplate = (pathPoints) =>{
   const tripPathArr = [];
   const tripPrice = pathPoints.reduce((accumulator, currentValue) => {
     tripPathArr.push(currentValue.destinationCity);
@@ -18,7 +20,29 @@ export const createTripInfoTemplate = (pathPoints) =>{
             <p class="trip-info__cost">
               Total: &euro;&nbsp;<span class="trip-info__cost-value">${tripPrice}</span>
             </p>
-      </section>
-`
+      </section>`
   );
 };
+
+export default class TripInfo {
+  constructor(pathPoints) {
+    this._element = null;
+    this._pathPoints = pathPoints;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._pathPoints);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
